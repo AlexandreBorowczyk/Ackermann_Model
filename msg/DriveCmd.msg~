@@ -1,0 +1,12 @@
+# Speed is defined as the scalar magnitude of the velocity
+# vector.
+
+float32 speed                   # magnitude of velocity vector (m/s)
+
+# Assumes Ackermann (front-wheel) steering. This angle is the average
+# yaw of the two front wheels in the vehicle frame of reference
+# (positive left), ignoring their slightly differing angles as if it
+# were a tricycle. This is *not* the angle of the steering wheel
+# inside the passenger compartment.
+#
+float32 steering_angle          # steering angle (radians)

@@ -60,8 +60,9 @@ namespace gazebo
 
     void OnUpdate();
 
-    ros::NodeHandle* rosnode_;
-    ros::Subscriber sub_;
+    ros::NodeHandle*  rosnode_;
+    ros::Publisher    pub_;
+    ros::Subscriber   sub_;
 
     boost::mutex lock;
 

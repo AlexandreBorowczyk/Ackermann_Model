@@ -1,8 +1,9 @@
 <?xml version="1.0"?>
 <launch>
   <!-- this launch file corresponds to robot model in ros-pkg/robot_descriptions/pr2/erratic_defs/robots for full erratic -->
-  <!-- start up wg world -->
+  <!-- start up wg world 
   <include file="$(find gazebo_ros)/launch/empty_world.launch"/>
+  -->
 
 
  <!--push robot_description to factory and spawn robot in gazebo  -->

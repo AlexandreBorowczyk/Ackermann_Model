@@ -18,6 +18,7 @@ find_package(catkin REQUIRED COMPONENTS
   dynamic_reconfigure
   driver_base
   std_msgs
+  mav_msgs
 )
 
 # Depend on system install of Gazebo
@@ -61,6 +62,7 @@ catkin_package(
   geometry_msgs
   sensor_msgs
   nav_msgs
+  mav_msgs
   urdf
   tf
   tf2_ros
@@ -78,3 +80,7 @@ catkin_package(
 
 add_library(gazebo_f150 src/CartDemoPlugin.cc)
 target_link_libraries(${PROJECT_NAME} ${catkin_LIBRARIES} ${GAZEBO_LIBRARIES}  ${Boost_LIBRARIES})
+
+add_executable(f150_follower src/f150_follower.cc)
+target_link_libraries(f150_follower ${catkin_LIBRARIES})
+add_dependencies(f150_follower ${catkin_EXPORTED_TARGETS})

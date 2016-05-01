@@ -284,5 +284,12 @@
   <wheelspread>1.733</wheelspread>
 </plugin>
 
+<plugin name="ground_truth" filename="libgazebo_ros_p3d.so">
+  <frameName>world</frameName>
+  <bodyName>chassis</bodyName>
+  <topicName>f150</topicName>
+  <updateRate>30.0</updateRate>
+</plugin>
+
 </model>
 </sdf>

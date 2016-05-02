@@ -29,6 +29,8 @@
 #include <trajectory_msgs/MultiDOFJointTrajectory.h>
 #include <gazebo_f150/landingConfig.h>
 #include <dynamic_reconfigure/server.h>
+#include <tf/transform_datatypes.h>
+#include <cmath>
 
 Eigen::Vector3d desired_position(0.0,0.0,0.0);
 ros::Publisher trajectory_pub;
@@ -49,23 +51,29 @@ void PositionCallback(const nav_msgs::Odometry::ConstPtr& msg)
            msg->pose.pose.position.y,
            msg->pose.pose.position.z);
 
-  desired_position(0) = msg->pose.pose.position.x;
-  desired_position(1) = msg->pose.pose.position.y;
+  tf::Quaternion q(msg->pose.pose.orientation.x,msg->pose.pose.orientation.y,msg->pose.pose.orientation.z,msg->pose.pose.orientation.w);
+  tf::Matrix3x3 m(q);
+  double roll, pitch, desired_yaw;
+  m.getRPY(roll, pitch, desired_yaw);
+
+
+  desired_position(0) = msg->pose.pose.position.x - 1.5 * cos(desired_yaw);
+  desired_position(1) = msg->pose.pose.position.y - 1.5 * sin(desired_yaw);
   desired_position(2) = msg->pose.pose.position.z + heigth;
 
-  double delay(1.0);
+
 
   const float DEG_2_RAD = M_PI / 180.0;
 
   trajectory_msgs::MultiDOFJointTrajectory trajectory_msg;
   trajectory_msg.header.stamp = ros::Time::now();
 
-  double desired_yaw = 0 * DEG_2_RAD;
-
   mav_msgs::msgMultiDofJointTrajectoryFromPositionYaw(desired_position,
       desired_yaw, &trajectory_msg);
 
-  //trajectory_msg.points[0].velocities[0].linear.x = 12.0;
+  trajectory_msg.points[0].velocities[0].linear.x = msg->twist.twist.linear.x;
+  trajectory_msg.points[0].velocities[0].linear.y = msg->twist.twist.linear.y;
+  trajectory_msg.points[0].velocities[0].linear.z = msg->twist.twist.linear.z;
 
   ROS_INFO("Publishing waypoint on namespace %s: [%f, %f, %f].",
            nh->getNamespace().c_str(),

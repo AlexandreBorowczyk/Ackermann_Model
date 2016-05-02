@@ -27,12 +27,21 @@
 #include <nav_msgs/Odometry.h>
 #include <ros/ros.h>
 #include <trajectory_msgs/MultiDOFJointTrajectory.h>
-
+#include <gazebo_f150/landingConfig.h>
+#include <dynamic_reconfigure/server.h>
 
 Eigen::Vector3d desired_position(0.0,0.0,0.0);
 ros::Publisher trajectory_pub;
 ros::NodeHandle * nh;
 
+double heigth(0.0);
+
+// dynamic_reconfigure
+void config_callback(gazebo_f150::landingConfig &config, uint32_t level) {
+  heigth = config.heigth;
+}
+
+// Subscriber
 void PositionCallback(const nav_msgs::Odometry::ConstPtr& msg)
 {
   ROS_INFO("Received [%f, %f, %f].",
@@ -42,7 +51,7 @@ void PositionCallback(const nav_msgs::Odometry::ConstPtr& msg)
 
   desired_position(0) = msg->pose.pose.position.x;
   desired_position(1) = msg->pose.pose.position.y;
-  desired_position(2) = msg->pose.pose.position.z + 1.5;
+  desired_position(2) = msg->pose.pose.position.z + heigth;
 
   double delay(1.0);
 
@@ -56,7 +65,7 @@ void PositionCallback(const nav_msgs::Odometry::ConstPtr& msg)
   mav_msgs::msgMultiDofJointTrajectoryFromPositionYaw(desired_position,
       desired_yaw, &trajectory_msg);
 
-  //trajectory_msg.points[0].velocities[0].linear.x = 12.0;   
+  //trajectory_msg.points[0].velocities[0].linear.x = 12.0;
 
   ROS_INFO("Publishing waypoint on namespace %s: [%f, %f, %f].",
            nh->getNamespace().c_str(),
@@ -76,6 +85,14 @@ int main(int argc, char** argv) {
       "/firefly/command/trajectory", 10);
 
   ros::Subscriber sub_ = nh->subscribe("/f150", 1, PositionCallback);
+
+//dynamic_reconfigure start
+  dynamic_reconfigure::Server<gazebo_f150::landingConfig> server;
+  dynamic_reconfigure::Server<gazebo_f150::landingConfig>::CallbackType f;
+
+  f = boost::bind(&config_callback, _1, _2);
+  server.setCallback(f);
+//dynamic_reconfigure start
 
   ROS_INFO("Started f150_follower.");
 

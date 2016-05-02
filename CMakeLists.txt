@@ -19,6 +19,7 @@ find_package(catkin REQUIRED COMPONENTS
   driver_base
   std_msgs
   mav_msgs
+  dynamic_reconfigure
 )
 
 # Depend on system install of Gazebo
@@ -26,11 +27,18 @@ find_package(gazebo REQUIRED)
 find_package(Boost REQUIRED COMPONENTS thread)
 set(CMAKE_CXX_FLAGS "${CMAKE_CXX_FLAGS} ${GAZEBO_CXX_FLAGS}")
 
+generate_dynamic_reconfigure_options(
+  cfg/landing.cfg
+)
+
 #message(${GAZEBO_INCLUDE_DIRS})
 include_directories(include
+  /usr/include
   ${Boost_INCLUDE_DIR}
   ${catkin_INCLUDE_DIRS}
   ${GAZEBO_INCLUDE_DIRS}
+  /usr/include/gazebo-7/gazebo
+  /usr/include/sdformat-4.1
 )
 
 
@@ -69,6 +77,7 @@ catkin_package(
   dynamic_reconfigure
   driver_base
   std_msgs
+  dynamic_reconfigure
 
   DEPENDS
     roscpp
@@ -83,4 +92,6 @@ target_link_libraries(${PROJECT_NAME} ${catkin_LIBRARIES} ${GAZEBO_LIBRARIES}  $
 
 add_executable(f150_follower src/f150_follower.cc)
 target_link_libraries(f150_follower ${catkin_LIBRARIES})
-add_dependencies(f150_follower ${catkin_EXPORTED_TARGETS})
+add_dependencies(f150_follower
+${catkin_EXPORTED_TARGETS}
+${PROJECT_NAME}_gencfg)

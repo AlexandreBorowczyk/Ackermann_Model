@@ -152,7 +152,7 @@ void CartDemoPlugin::CmdCallback(const geometry_msgs::Twist::ConstPtr& cmd_msg)
   else
   {
     wturnRadius_target = std::max( 1/fabs(wAngularRate) * 10, min_turnRadius);
-    std::cout << " TurnRadius: [" << wturnRadius_target << "]\n";
+    //std::cout << " TurnRadius: [" << wturnRadius_target << "]\n";
     out_steering_target   = (90 * cDEG2RAD) - atan2(wturnRadius_target,wheelbase) ;
     in_steering_target    = (90 * cDEG2RAD) - atan2((wturnRadius_target - wheelspread),wheelbase);
 
@@ -172,7 +172,7 @@ void CartDemoPlugin::CmdCallback(const geometry_msgs::Twist::ConstPtr& cmd_msg)
 
   speed_target       = cmd_msg->linear.x;
 
- std::cout << " Right: [" << right_steering_target * cRAD2DEG << "] Left: [" << left_steering_target * cRAD2DEG << "]\n";
+ //std::cout << " Right: [" << right_steering_target * cRAD2DEG << "] Left: [" << left_steering_target * cRAD2DEG << "]\n";
 }
 
 /////////////////////////////////////////////////

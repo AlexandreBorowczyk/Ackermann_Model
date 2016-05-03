@@ -36,11 +36,17 @@ Eigen::Vector3d desired_position(0.0,0.0,0.0);
 ros::Publisher trajectory_pub;
 ros::NodeHandle * nh;
 
+ros::Time prev_iter;
+
 double heigth(0.0);
+double landing_offset(1.5);
+double descent_rate(0.0);
 
 // dynamic_reconfigure
 void config_callback(gazebo_f150::landingConfig &config, uint32_t level) {
-  heigth = config.heigth;
+  heigth          = config.heigth;
+  landing_offset  = config.landing_offset;
+  descent_rate    = config.descent_rate;
 }
 
 // Subscriber
@@ -56,9 +62,25 @@ void PositionCallback(const nav_msgs::Odometry::ConstPtr& msg)
   double roll, pitch, desired_yaw;
   m.getRPY(roll, pitch, desired_yaw);
 
+  ros::Time now = ros::Time::now();
 
-  desired_position(0) = msg->pose.pose.position.x - 1.5 * cos(desired_yaw);
-  desired_position(1) = msg->pose.pose.position.y - 1.5 * sin(desired_yaw);
+  desired_position(0) = msg->pose.pose.position.x - landing_offset * cos(desired_yaw);
+  desired_position(1) = msg->pose.pose.position.y - landing_offset * sin(desired_yaw);
+
+  if (descent_rate > 0)
+  {
+
+    heigth -= descent_rate * 0.001 * (now-prev_iter).toSec();
+
+    if (heigth < 0)
+    {
+      heigth = 0;
+      descent_rate = 0;
+    }
+  }
+
+
+
   desired_position(2) = msg->pose.pose.position.z + heigth;
 
 
@@ -75,11 +97,13 @@ void PositionCallback(const nav_msgs::Odometry::ConstPtr& msg)
   trajectory_msg.points[0].velocities[0].linear.y = msg->twist.twist.linear.y;
   trajectory_msg.points[0].velocities[0].linear.z = msg->twist.twist.linear.z;
 
+/*
   ROS_INFO("Publishing waypoint on namespace %s: [%f, %f, %f].",
            nh->getNamespace().c_str(),
            desired_position.x(),
            desired_position.y(),
            desired_position.z());
+*/
   trajectory_pub.publish(trajectory_msg);
 }
 
@@ -88,9 +112,33 @@ int main(int argc, char** argv) {
 
   ros::init(argc, argv, "f150_follower");
   nh = new ros::NodeHandle("");
+
+  prev_iter = ros::Time::now();
+
+  std::string ns;
+  ros::V_string args;
+
+  ros::removeROSArgs(argc, argv, args);
+
+  if (args.size() == 1) {
+    ns = ros::this_node::getNamespace();
+  }
+  else if (args.size() == 2) {
+    ns = args.at(2);
+  }
+  else{
+    ROS_ERROR("Usage: f150_follower <namespace>\n");
+    return -1;
+  }
+
+
+
   trajectory_pub =
       nh->advertise<trajectory_msgs::MultiDOFJointTrajectory>(
-      "/firefly/command/trajectory", 10);
+      ns+"/command/trajectory", 10);
+
+
+
 
   ros::Subscriber sub_ = nh->subscribe("/f150", 1, PositionCallback);
 

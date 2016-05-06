@@ -1,19 +1,24 @@
 <?xml version="1.0"?>
 <launch>
   <!-- this launch file corresponds to robot model in ros-pkg/robot_descriptions/pr2/erratic_defs/robots for full erratic -->
-  <!-- start up wg world 
+  <!-- start up wg world
   <include file="$(find gazebo_ros)/launch/empty_world.launch"/>
-  -->
+-->
+  <arg name="x" default="0"/>
+  <arg name="y" default="0" />
+  <arg name="z" default="0" />
 
 
  <!--push robot_description to factory and spawn robot in gazebo  -->
  <node name="spawn_robot" pkg="gazebo_ros" type="spawn_model"
           args="-file $(find gazebo_f150)/models/F150/model.sdf
                 -sdf
-                -model F-150"
+                -model F-150
+                -x $(arg x)
+                -y $(arg y)
+                -z $(arg z)"
           respawn="false" output="screen" />
 
-  <!--<node pkg="rviz" type="rviz" name="rviz" args="-d $(find car_like_simulation)/rviz_config.vcg">
-    </node>-->
+
 
 </launch>

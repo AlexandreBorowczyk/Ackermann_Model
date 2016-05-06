@@ -52,11 +52,12 @@ void config_callback(gazebo_f150::landingConfig &config, uint32_t level) {
 // Subscriber
 void PositionCallback(const nav_msgs::Odometry::ConstPtr& msg)
 {
-  ROS_INFO("Received [%f, %f, %f].",
+  /*
+    ROS_INFO("Received [%f, %f, %f].",
            msg->pose.pose.position.x,
            msg->pose.pose.position.y,
            msg->pose.pose.position.z);
-
+  */
   tf::Quaternion q(msg->pose.pose.orientation.x,msg->pose.pose.orientation.y,msg->pose.pose.orientation.z,msg->pose.pose.orientation.w);
   tf::Matrix3x3 m(q);
   double roll, pitch, desired_yaw;

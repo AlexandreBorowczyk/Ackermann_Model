@@ -8,8 +8,9 @@
     <static>false</static>
 
     <link name="chassis">
-    <pose>0 0 0.84451 0 0 0</pose>
+    <pose>0 0 0 0 0 0 0</pose>
       <inertial>
+        <pose>0 0 0.84451 0 0 0</pose>
         <inertia>
           <ixx>904</ixx>
           <ixy>0</ixy>
@@ -21,7 +22,7 @@
         <mass>2260.0</mass>
       </inertial>
       <collision name="collision_chassis_front">
-        <pose>0.935 0 0.15 0 0 0</pose>
+        <pose>0.935 0 0.99451 0 0 0</pose>
         <geometry>
           <box>
             <size>3.370 1.80 1.56</size>
@@ -29,7 +30,7 @@
         </geometry>
       </collision>
       <collision name="collision_chassis_back">
-        <pose>-1.770 0 -0.1035 0 0 0</pose>
+        <pose>-1.770 0 0.74101 0 0 0</pose>
         <geometry>
           <box>
             <size>2.035 1.80 1.053</size>

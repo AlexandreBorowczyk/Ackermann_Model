@@ -1,3 +1,3 @@
 To do:
 Validate model mechanics.
-Implement Head and Speed control.
+Implement Heading and Speed control.

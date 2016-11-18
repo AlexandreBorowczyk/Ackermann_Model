@@ -16,7 +16,6 @@ find_package(catkin REQUIRED COMPONENTS
   tf
   tf2_ros
   dynamic_reconfigure
-  driver_base
   std_msgs
   mav_msgs
   dynamic_reconfigure
@@ -75,7 +74,6 @@ catkin_package(
   tf
   tf2_ros
   dynamic_reconfigure
-  driver_base
   std_msgs
   dynamic_reconfigure
 

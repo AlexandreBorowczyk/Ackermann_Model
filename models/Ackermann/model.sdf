@@ -1,9 +1,5 @@
-<!-- rosrun gazebo_ros spawn_model -model F-150 -sdf -file /home/bigb/gazebo_f150_ws/src/gazebo_f150/models/F150/model.sdf -->
-
-
 <?xml version="1.0" ?>
-
-
+<!-- rosrun gazebo_ros spawn_model -model F-150 -sdf -file /home/bigb/gazebo_f150_ws/src/gazebo_f150/models/F150/model.sdf -->
 
 
 <sdf version="1.5">

@@ -1,6 +1,3 @@
-<!-- rosrun gazebo_ros spawn_model -model F-150 -sdf -file /home/bigb/gazebo_f150_ws/src/gazebo_f150/models/F150/model.sdf -->
-
-
 <?xml version="1.0" ?>
 
 <%
@@ -78,7 +75,7 @@ front_wheel_locations = {
       -->
         <geometry>
           <mesh>
-            <uri>model://F150/meshes/F150.dae</uri>
+            <uri>model://f150_ackermann/meshes/F150.dae</uri>
           </mesh>
         </geometry>
       </visual>
@@ -172,7 +169,7 @@ front_wheel_locations = {
       <pose>0 0 0 0 0 <%= wheel_vis * Math::PI %></pose>
         <geometry>
           <mesh>
-            <uri>model://F150/meshes/wheel.dae</uri>
+            <uri>model://f150_ackermann/meshes/wheel.dae</uri>
           </mesh>
         </geometry>
       </visual>
@@ -359,7 +356,7 @@ front_wheel_locations = {
       <pose>0 0 0 <%= wheel_vis * Math::PI %> 0 0 </pose>
         <geometry>
           <mesh>
-            <uri>model://F150/meshes/wheel.dae</uri>
+            <uri>model://f150_ackermann/meshes/wheel.dae</uri>
           </mesh>
         </geometry>
       </visual>

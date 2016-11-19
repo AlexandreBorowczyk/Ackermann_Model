@@ -47,7 +47,7 @@
       -->
         <geometry>
           <mesh>
-            <uri>model://F150/meshes/F150.dae</uri>
+            <uri>model://f150_ackermann/meshes/F150.dae</uri>
           </mesh>
         </geometry>
       </visual>
@@ -92,16 +92,16 @@
       <axis>
         <xyz>0 1 0</xyz>
         <dynamics>
-          <spring_stiffness>10000000</spring_stiffness>
-          <damping>35000</damping>
-          <friction>10000</friction>
+          <spring_stiffness>1</spring_stiffness>
+          <damping>3</damping>
+          <friction>1</friction>
           <spring_reference>0</spring_reference>
         </dynamics>
       </axis>
     </joint>
 
 
-    
+
 
     <link name="front_left_wheel_link">
     <pose>0 0.8665 0.445 0 0 0</pose>
@@ -137,7 +137,7 @@
       <pose>0 0 0 0 0 3.141592653589793</pose>
         <geometry>
           <mesh>
-            <uri>model://F150/meshes/wheel.dae</uri>
+            <uri>model://f150_ackermann/meshes/wheel.dae</uri>
           </mesh>
         </geometry>
       </visual>
@@ -324,7 +324,7 @@
       <pose>0 0 0 3.141592653589793 0 0 </pose>
         <geometry>
           <mesh>
-            <uri>model://F150/meshes/wheel.dae</uri>
+            <uri>model://f150_ackermann/meshes/wheel.dae</uri>
           </mesh>
         </geometry>
       </visual>
@@ -424,7 +424,7 @@
       <pose>0 0 0 0 0 0.0</pose>
         <geometry>
           <mesh>
-            <uri>model://F150/meshes/wheel.dae</uri>
+            <uri>model://f150_ackermann/meshes/wheel.dae</uri>
           </mesh>
         </geometry>
       </visual>
@@ -611,7 +611,7 @@
       <pose>0 0 0 0.0 0 0 </pose>
         <geometry>
           <mesh>
-            <uri>model://F150/meshes/wheel.dae</uri>
+            <uri>model://f150_ackermann/meshes/wheel.dae</uri>
           </mesh>
         </geometry>
       </visual>
@@ -674,10 +674,7 @@
       </axis>
     </joint>
 
-
-
-
-
+<plugin name="motion_controller" filename="libmotion_controller.so"/>
 
 </model>
 </sdf>

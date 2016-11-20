@@ -2,19 +2,41 @@
 
 <%
 
+# Vehicle Specs
+chassis_mass           = 2260.0 # kg
 wheelbase             = 3.651
 track_width           = 1.733
 wheel_radius          = 0.445
 wheel_width           = 0.297
-cg_x                  = 1.953
-cg_y                  = 0.84451
-suspension_stiffness  = 60000
-suspension_damping    = 5000
+chassis_center_x      = 1.953
+chassis_center_z      = 0.84451
 
+cg_x                  = 1.0
+cg_z                  = 0.0
+
+# Suspension parameters
+front_weight_loading = cg_x / wheelbase;
+
+damping = Math::sqrt(2)/2
+desired_freq    = 2 * Math::PI # Desired comfort factor of 1 hz
+
+freq = desired_freq / Math::sqrt(1 - (damping * damping))
+
+weight_on_front_wheels            = chassis_mass * (1 - front_weight_loading)
+front_suspension_stiffness        = (freq * freq)* 0.5 * weight_on_front_wheels
+front_suspension_damping          = 2 * damping * Math::sqrt(front_suspension_stiffness * 0.5 * weight_on_front_wheels)
+front_suspension_spring_reference = - 0.5 * weight_on_front_wheels * 9.81 / front_suspension_stiffness
+
+weight_on_rear_wheels             = chassis_mass * front_weight_loading
+rear_suspension_stiffness         = (freq * freq)* 0.5 * weight_on_rear_wheels
+rear_suspension_damping           = 2 * damping * Math::sqrt(rear_suspension_stiffness * 0.5 * weight_on_rear_wheels)
+rear_suspension_spring_reference  = - 0.5 * weight_on_rear_wheels * 9.81 / rear_suspension_stiffness
+
+wheel_friction                    = 10;
+
+# Steering system paramters
 ackermann_angle       = Math::atan2(track_width/2,wheelbase)
-
 centerline_length     = 1.15
-
 steering_arm_length   = 0.35
 
 steering_arm_x        = -Math::cos(ackermann_angle)*steering_arm_length
@@ -37,8 +59,9 @@ front_wheel_locations = {
     <self_collide>false</self_collide>
 
     <link name="chassis">
-    <pose><%= -cg_x %> 0 <%= cg_y %> 0 0 0</pose>
+    <pose><%= -chassis_center_x %> 0 <%= chassis_center_z %> 0 0 0</pose>
       <inertial>
+        <pose><%= chassis_center_x-cg_x %> 0 <%= cg_z %> 0 0 0</pose>
         <inertia>
           <ixx>904</ixx>
           <ixy>0</ixy>
@@ -47,10 +70,10 @@ front_wheel_locations = {
           <iyz>0</iyz>
           <izz>5900</izz>
         </inertia>
-        <mass>2260.0</mass>
+        <mass><%= chassis_mass %></mass>
       </inertial>
       <collision name="collision_chassis_front">
-        <pose>0.935 0 <%= 0.99451 - cg_y %> 0 0 0</pose>
+        <pose>0.935 0 <%= 0.99451 - chassis_center_z %> 0 0 0</pose>
         <geometry>
           <box>
             <size>3.370 1.80 1.56</size>
@@ -58,7 +81,7 @@ front_wheel_locations = {
         </geometry>
       </collision>
       <collision name="collision_chassis_back">
-        <pose>-1.770 0 <%= 0.74101 - cg_y %> 0 0 0</pose>
+        <pose>-1.770 0 <%= 0.74101 - chassis_center_z %> 0 0 0</pose>
         <geometry>
           <box>
             <size>2.035 1.80 1.053</size>
@@ -282,6 +305,9 @@ front_wheel_locations = {
       <pose>0 0 0 0 0 0</pose>
       <axis>
         <xyz>0 1 0</xyz>
+        <dynamics>
+          <friction><%= wheel_friction %></friction>
+        </dynamics>
       </axis>
     </joint>
 
@@ -313,9 +339,9 @@ front_wheel_locations = {
       <axis>
         <xyz>0 0 1</xyz>
         <dynamics>
-          <spring_stiffness><%= suspension_stiffness %></spring_stiffness>
-          <damping><%= suspension_damping %></damping>
-          <spring_reference>-0.0645</spring_reference>
+          <spring_stiffness><%= front_suspension_stiffness %></spring_stiffness>
+          <damping><%= front_suspension_damping %></damping>
+          <spring_reference><%= front_suspension_spring_reference %></spring_reference>
         </dynamics>
       </axis>
     </joint>
@@ -402,6 +428,9 @@ front_wheel_locations = {
       <pose>0 0 0 0 0 0</pose>
       <axis>
         <xyz>0 1 0</xyz>
+        <dynamics>
+          <friction><%= wheel_friction %></friction>
+        </dynamics>
       </axis>
     </joint>
 
@@ -412,9 +441,9 @@ front_wheel_locations = {
       <axis>
         <xyz>0 0 1</xyz>
         <dynamics>
-          <spring_stiffness><%= suspension_stiffness %></spring_stiffness>
-          <damping><%= suspension_damping %></damping>
-          <spring_reference>-0.073</spring_reference>
+          <spring_stiffness><%= rear_suspension_stiffness %></spring_stiffness>
+          <damping><%= rear_suspension_damping %></damping>
+          <spring_reference><%= rear_suspension_spring_reference %></spring_reference>
         </dynamics>
       </axis>
     </joint>
@@ -422,7 +451,11 @@ front_wheel_locations = {
 
 <% end %>
 
-
+<plugin name="motion_controller" filename="libmotion_controller.so">
+<center_link_joint>centerlink2chassis_joint</center_link_joint>
+<right_front_wheels_joint>right_arm2wheel_joint</right_front_wheels_joint>
+<left_front_wheels_joint>left_arm2wheel_joint</left_front_wheels_joint>
+</plugin>
 
 </model>
 </sdf>

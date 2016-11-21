@@ -10,9 +10,13 @@ wheel_radius          = 0.445 # m
 wheel_width           = 0.297 # m
 chassis_center_x      = 1.953 # m from front wheels
 chassis_center_z      = 0.84451 # m
-cg_x                  = 1.0 # m
-cg_z                  = 0.0 # m
-wheel_limit           = 0.25 # rad
+cg_x                  = 1.42 # m
+cg_z                  = 0.7 # m
+
+# Wheel limits
+turn_radius_curb2curb = 13.95 #m
+
+wheel_limit           = Math::asin(wheelbase/(turn_radius_curb2curb - (0.5 * track_width))) # rad
 
 # Suspension parameters
 front_weight_loading = cg_x / wheelbase;
@@ -21,6 +25,8 @@ damping = Math::sqrt(2)/2
 desired_freq    = 2 * Math::PI # Desired comfort factor of 1 hz
 
 freq = desired_freq / Math::sqrt(1 - (damping * damping))
+#TODO setup different freq for rear and front suspension to control pitch dynamic
+
 
 weight_on_front_wheels            = chassis_mass * (1 - front_weight_loading)
 front_suspension_stiffness        = (freq * freq)* 0.5 * weight_on_front_wheels
@@ -32,12 +38,12 @@ rear_suspension_stiffness         = (freq * freq)* 0.5 * weight_on_rear_wheels
 rear_suspension_damping           = 2 * damping * Math::sqrt(rear_suspension_stiffness * 0.5 * weight_on_rear_wheels)
 rear_suspension_spring_reference  = - 0.5 * weight_on_rear_wheels * 9.81 / rear_suspension_stiffness
 
-wheel_friction                    = 10;
+wheel_static_friction                    = 10;
 
 # Steering system paramters
 ackermann_angle       = Math::atan2(track_width/2,wheelbase)
 centerline_length     = 1.15
-steering_arm_length   = 0.35
+steering_arm_length   = 0.6 #0.35
 
 steering_arm_x        = -Math::cos(ackermann_angle)*steering_arm_length
 steering_arm_y        = Math::sin(ackermann_angle)*steering_arm_length
@@ -61,7 +67,7 @@ front_wheel_locations = {
     <link name="chassis">
     <pose><%= -chassis_center_x %> 0 <%= chassis_center_z %> 0 0 0</pose>
       <inertial>
-        <pose><%= chassis_center_x-cg_x %> 0 <%= cg_z %> 0 0 0</pose>
+        <pose><%= chassis_center_x-cg_x %> 0 <%= cg_z-chassis_center_z %> 0 0 0</pose>
         <inertia>
           <ixx>904</ixx>
           <ixy>0</ixy>
@@ -306,7 +312,7 @@ front_wheel_locations = {
       <axis>
         <xyz>0 1 0</xyz>
         <dynamics>
-          <friction><%= wheel_friction %></friction>
+          <friction><%= wheel_static_friction %></friction>
         </dynamics>
       </axis>
     </joint>
@@ -433,7 +439,7 @@ front_wheel_locations = {
       <axis>
         <xyz>0 1 0</xyz>
         <dynamics>
-          <friction><%= wheel_friction %></friction>
+          <friction><%= wheel_static_friction %></friction>
         </dynamics>
       </axis>
     </joint>

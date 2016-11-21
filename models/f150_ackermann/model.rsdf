@@ -3,16 +3,16 @@
 <%
 
 # Vehicle Specs
-chassis_mass           = 2260.0 # kg
-wheelbase             = 3.651
-track_width           = 1.733
-wheel_radius          = 0.445
-wheel_width           = 0.297
-chassis_center_x      = 1.953
-chassis_center_z      = 0.84451
-
-cg_x                  = 1.0
-cg_z                  = 0.0
+chassis_mass          = 2260.0 # kg
+wheelbase             = 3.651 # m
+track_width           = 1.733 # m
+wheel_radius          = 0.445 # m
+wheel_width           = 0.297 # m
+chassis_center_x      = 1.953 # m from front wheels
+chassis_center_z      = 0.84451 # m
+cg_x                  = 1.0 # m
+cg_z                  = 0.0 # m
+wheel_limit           = 0.25 # rad
 
 # Suspension parameters
 front_weight_loading = cg_x / wheelbase;
@@ -143,9 +143,9 @@ front_wheel_locations = {
       <axis>
         <xyz>0 1 0</xyz>
         <dynamics>
-          <spring_stiffness>10000000</spring_stiffness>
-          <damping>35000</damping>
-          <friction>10000</friction>
+          <spring_stiffness>0</spring_stiffness>
+          <damping>0</damping>
+          <friction>10</friction>
           <spring_reference>0</spring_reference>
         </dynamics>
       </axis>
@@ -329,6 +329,10 @@ front_wheel_locations = {
       <pose>0 0 <%= (0.3/2)%> 0 0 0</pose>
       <axis>
         <xyz>0 0 1</xyz>
+        <limit>
+          <lower><%= -wheel_limit %></lower>
+          <upper><%= wheel_limit %></upper>
+        </limit>
       </axis>
     </joint>
 

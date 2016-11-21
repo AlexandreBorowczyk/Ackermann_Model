@@ -23,61 +23,64 @@ void MotionControllerPlugin::Load(physics::ModelPtr _parent, sdf::ElementPtr _sd
 
   // Store the pointer to the model
   this->model_ = _parent;
+  this->sdf_ = _sdf;
 
-  std::string parameter_name;
-  sdf::ElementPtr joint_name;
+
 
   // Get center link joint
-  parameter_name = "center_link_joint";
-  joint_name = _sdf->GetElement(parameter_name);
-  if (nullptr == joint_name)
-  {
-    gzerr << "<" << parameter_name << ">" << " does not exist\n";
-    return;
-  } else {
-    center_link_joint_ = model_->GetJoint(joint_name->GetValue()->GetAsString());
-  }
+  center_link_joint_ = GetJoint("center_link_joint");
 
   // Get right wheel rotationary joint
-  parameter_name = "right_front_wheels_joint";
-  joint_name = _sdf->GetElement(parameter_name);
-  if (nullptr == joint_name)
-  {
-    gzerr << "<" << parameter_name << ">" << " does not exist\n";
-    return;
-  } else {
-    front_wheels_joints_[0] = model_->GetJoint(joint_name->GetValue()->GetAsString());
-  }
+  front_wheels_joints_[0] = GetJoint("right_front_wheels_joint");
 
   // Get left wheel rotationary joint
-  parameter_name = "left_front_wheels_joint";
-  joint_name = _sdf->GetElement(parameter_name);
-  if (nullptr == joint_name)
-  {
-    gzerr << "<" << parameter_name << ">" << " does not exist\n";
-    return;
-  } else {
-    front_wheels_joints_[1] = model_->GetJoint(joint_name->GetValue()->GetAsString());
+  front_wheels_joints_[1] = GetJoint("left_front_wheels_joint");
+
+
+  if(nullptr != center_link_joint_ &&
+     nullptr != front_wheels_joints_[0] &&
+     nullptr != front_wheels_joints_[1]) {
+
+    // Listen to the update event. This event is broadcast every
+    // simulation iteration.
+    this->update_connection_ = event::Events::ConnectWorldUpdateBegin(
+                                 boost::bind(&MotionControllerPlugin::OnUpdate, this, _1));
+
+    gzmsg << "MotionControllerPlugin: Loaded.\n";
+
   }
-
-  // Listen to the update event. This event is broadcast every
-  // simulation iteration.
-  this->update_connection_ = event::Events::ConnectWorldUpdateBegin(
-                               boost::bind(&MotionControllerPlugin::OnUpdate, this, _1));
-
-  gzmsg << "MotionControllerPlugin: Loaded.\n";
 }
 
 // Called by the world update start event
 
 void MotionControllerPlugin::OnUpdate(const common::UpdateInfo & /*_info*/) {
 
-  if( 0.13 > center_link_joint_->GetAngle(0).Radian()) {
-    center_link_joint_->SetVelocity(0,0.1);
-  }
+  center_link_joint_->SetVelocity(0,10);
 
   front_wheels_joints_[0]->SetVelocity(0,2.0);
   front_wheels_joints_[1]->SetVelocity(0,2.0);
+}
+
+physics::JointPtr MotionControllerPlugin::GetJoint(const std::string& element_name) {
+
+  physics::JointPtr joint_ptr = nullptr;
+
+  if(nullptr != model_ &&
+     nullptr != sdf_ ) {
+
+    sdf::ElementPtr joint_name = sdf_->GetElement(element_name);
+    if (nullptr == joint_name)
+    {
+      gzerr << "<" << element_name << ">" << " does not exist\n";
+
+    } else {
+      joint_ptr = model_->GetJoint(joint_name->GetValue()->GetAsString());
+    }
+
+  }
+
+  return joint_ptr;
+
 }
 
 

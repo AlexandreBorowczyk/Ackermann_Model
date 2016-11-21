@@ -18,11 +18,16 @@ class GAZEBO_VISIBLE MotionControllerPlugin : public ModelPlugin {
 
         // Pointer to the model
     private:
-        physics::ModelPtr model_;
-        event::ConnectionPtr update_connection_;
 
-        physics::JointPtr center_link_joint_;
-        physics::JointPtr front_wheels_joints_[2];
+        physics::JointPtr GetJoint(const std::string& element_name);
+
+        physics::ModelPtr       model_;
+        sdf::ElementPtr         sdf_;
+
+        event::ConnectionPtr    update_connection_;
+
+        physics::JointPtr       center_link_joint_;
+        physics::JointPtr       front_wheels_joints_[2];
 
 };
 

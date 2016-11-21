@@ -12,7 +12,8 @@ class GAZEBO_VISIBLE MotionControllerPlugin : public ModelPlugin {
         explicit MotionControllerPlugin();
         virtual ~MotionControllerPlugin();
 
-        void Load(physics::ModelPtr parent, sdf::ElementPtr /*_sdf*/);
+        void Load(physics::ModelPtr parent, sdf::ElementPtr /*_sdf*/) override;
+
         void OnUpdate(const common::UpdateInfo & /*_info*/);
 
 

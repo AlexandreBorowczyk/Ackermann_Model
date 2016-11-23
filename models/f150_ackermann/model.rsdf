@@ -111,7 +111,7 @@ front_wheel_locations = {
     </link>
 
     <link name="steering_centerlink_link">
-    <pose><%= steering_arm_x %> 0 <%= wheel_radius%> 0 0 0</pose>
+    <pose><%= steering_arm_x %> 0 <%= wheel_radius + 0.15%> 0 0 0</pose>
       <inertial>
         <inertia>
           <ixx>0.1</ixx>
@@ -207,7 +207,7 @@ front_wheel_locations = {
     </link>
 
     <%= "<link name=" + '"' + k + '_steering_arm_link">' %>
-    <pose><%= steering_arm_x/2 %> <%= side * (track_width/2 -steering_arm_y/2) %>  <%= wheel_radius %>  0 0 0</pose> <!-- Front wheel position with rotation -->
+    <pose>0 <%= side * (track_width/2) %>  <%= wheel_radius + 0.15 %>  0 0 0</pose> <!-- Front wheel position with rotation -->
       <inertial>
         <inertia>
           <ixx>0.1</ixx>
@@ -229,7 +229,7 @@ front_wheel_locations = {
         </geometry>
       </collision>
       <visual name="visual">
-        <pose> 0 0 0 0 <%= Math::PI/2 %> <%= side * ackermann_angle %></pose>
+        <pose> <%= steering_arm_x/2 %> <%= side * -steering_arm_y/2 %> 0 0 <%= Math::PI/2 %> <%= side * ackermann_angle %></pose>
         <geometry>
           <cylinder>
             <radius>0.01</radius>
@@ -240,7 +240,7 @@ front_wheel_locations = {
     </link>
 
     <%= "<link name=" + '"' + k + '_tierod_link">' %>
-    <pose><%= steering_arm_x %> <%= side * (track_width/2 - steering_arm_y - tierod_length/2) %> <%= wheel_radius %> 0 0 0</pose> <!-- Front wheel position with rotation -->
+    <pose><%= steering_arm_x %> <%= side * (track_width/2 - steering_arm_y - tierod_length/2) %> <%= wheel_radius + 0.15 %> 0 0 0</pose> <!-- Front wheel position with rotation -->
       <inertial>
         <inertia>
           <ixx>0.1</ixx>
@@ -272,7 +272,7 @@ front_wheel_locations = {
     </link>
 
     <%= "<link name=" + '"front_' + k + '_suspension_link">' %>
-    <pose>0 <%= side * track_width/2 %> <%= wheel_radius + (0.3/2) %> 0 0 0</pose>
+    <pose>0 <%= side * track_width/2 %> <%= wheel_radius + (0.3/4) %> 0 0 0</pose>
       <inertial>
         <inertia>
           <ixx>0.1</ixx>
@@ -299,14 +299,14 @@ front_wheel_locations = {
         <geometry>
           <cylinder>
             <radius>0.01</radius>
-            <length>0.3</length>
+            <length><%= 0.3/2 %></length>
           </cylinder>
         </geometry>
       </visual>
     </link>
 
-    <%= "<joint name=" + '"' + k + '_arm2wheel_joint" type="revolute">' %>
-      <parent><%= k + '_steering_arm_link' %></parent>
+    <%= "<joint name=" + '"' + k + '_suspension2wheel_joint" type="revolute">' %>
+      <parent><%= 'front_' + k + '_suspension_link' %></parent>
       <child><%= 'front_' + k + '_wheel_link' %></child>
       <pose>0 0 0 0 0 0</pose>
       <axis>
@@ -317,22 +317,28 @@ front_wheel_locations = {
       </axis>
     </joint>
 
-    <%= "<joint name=" + '"' + k + '_arm2tierod_joint" type="ball">' %>
+    <%= "<joint name=" + '"' + k + '_arm2tierod_joint" type="revolute">' %>
       <parent><%= k + '_steering_arm_link' %></parent>
       <child><%= k + '_tierod_link'%></child>
       <pose>0 <%= side * tierod_length/2 %> 0 0 0 0</pose>
+      <axis>
+        <xyz>0 0 1</xyz>
+      </axis>
     </joint>
 
-    <%= "<joint name=" + '"' + k + '_tierod2centerlink_joint" type="ball">' %>
+    <%= "<joint name=" + '"' + k + '_tierod2centerlink_joint" type="revolute">' %>
       <parent>steering_centerlink_link</parent>
       <child><%= k + '_tierod_link'%></child>
       <pose>0 <%= -side * tierod_length/2 %> 0 0 0 0</pose>
+      <axis>
+        <xyz>0 0 1</xyz>
+      </axis>
     </joint>
 
-    <%= "<joint name=" + '"' + k + '_wheel2chassis_joint" type="revolute">' %>
-      <parent><%= k + '_steering_arm_link' %></parent>
-      <child><%= 'front_' + k + '_suspension_link' %></child>
-      <pose>0 0 <%= (0.3/2)%> 0 0 0</pose>
+    <%= "<joint name=" + '"' + k + '_chassis2arm_joint" type="revolute">' %>
+      <parent>chassis</parent>
+      <child><%= k + '_steering_arm_link' %></child>
+      <pose>0 0 0 0 0 0</pose>
       <axis>
         <xyz>0 0 1</xyz>
         <limit>
@@ -342,8 +348,8 @@ front_wheel_locations = {
       </axis>
     </joint>
 
-    <%= "<joint name=" + '"front_' + k + '_suspension2chassis_joint" type="prismatic">' %>
-      <parent>chassis</parent>
+    <%= "<joint name=" + '"front_' + k + '_arm2suspension_joint" type="prismatic">' %>
+      <parent><%= k + '_steering_arm_link' %></parent>
       <child><%= 'front_' + k + '_suspension_link' %></child>
       <pose>0 0 0 0 0 0</pose>
       <axis>
@@ -461,11 +467,15 @@ front_wheel_locations = {
 
 <% end %>
 
+
 <plugin name="motion_controller" filename="libmotion_controller.so">
 <center_link_joint>centerlink2chassis_joint</center_link_joint>
-<right_front_wheels_joint>right_arm2wheel_joint</right_front_wheels_joint>
-<left_front_wheels_joint>left_arm2wheel_joint</left_front_wheels_joint>
+<right_front_wheels_joint>right_suspension2wheel_joint</right_front_wheels_joint>
+<left_front_wheels_joint>left_suspension2wheel_joint</left_front_wheels_joint>
 </plugin>
+
+
+
 
 </model>
 </sdf>

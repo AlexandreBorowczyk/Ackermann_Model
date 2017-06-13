@@ -1,8 +1,9 @@
 <?xml version="1.0" ?>
 
 <%
-
-# Vehicle Specs
+# ----------------
+#  Vehicle Specs
+# ----------------
 chassis_mass          = 2260.0 # kg
 wheelbase             = 3.651 # m
 track_width           = 1.733 # m
@@ -14,9 +15,9 @@ cg_x                  = 1.42 # m
 cg_z                  = 0.7 # m
 
 # Wheel limits
-turn_radius_curb2curb = 13.95 #m
+turn_radius_curb2curb = 15.5 / 2 #m
 
-wheel_limit           = Math::asin(wheelbase/(turn_radius_curb2curb - (0.5 * track_width))) # rad
+wheel_limit           = (Math::PI / 2) - Math::atan2((turn_radius_curb2curb - track_width), wheelbase) # rad
 
 # Suspension parameters
 front_weight_loading = cg_x / wheelbase;
@@ -27,28 +28,33 @@ desired_freq    = 2 * Math::PI # Desired comfort factor of 1 hz
 freq = desired_freq / Math::sqrt(1 - (damping * damping))
 #TODO setup different freq for rear and front suspension to control pitch dynamic
 
-
+# Front wheel
 weight_on_front_wheels            = chassis_mass * (1 - front_weight_loading)
 front_suspension_stiffness        = (freq * freq)* 0.5 * weight_on_front_wheels
 front_suspension_damping          = 2 * damping * Math::sqrt(front_suspension_stiffness * 0.5 * weight_on_front_wheels)
 front_suspension_spring_reference = - 0.5 * weight_on_front_wheels * 9.81 / front_suspension_stiffness
 
+# Rear wheel
 weight_on_rear_wheels             = chassis_mass * front_weight_loading
 rear_suspension_stiffness         = (freq * freq)* 0.5 * weight_on_rear_wheels
 rear_suspension_damping           = 2 * damping * Math::sqrt(rear_suspension_stiffness * 0.5 * weight_on_rear_wheels)
 rear_suspension_spring_reference  = - 0.5 * weight_on_rear_wheels * 9.81 / rear_suspension_stiffness
 
-wheel_static_friction                    = 10;
+wheel_torque_limit                       = 350;
+wheel_static_friction                    = 1;
 
 # Steering system paramters
 ackermann_angle       = Math::atan2(track_width/2,wheelbase)
-centerline_length     = 1.15
-steering_arm_length   = 0.6 #0.35
+centerline_length     = 1.0
+steering_arm_length   = 0.6
 
 steering_arm_x        = -Math::cos(ackermann_angle)*steering_arm_length
 steering_arm_y        = Math::sin(ackermann_angle)*steering_arm_length
 
 tierod_length         = (track_width - 2*steering_arm_y - centerline_length)/2
+
+
+# Right - Left for loop
 
 front_wheel_locations = {
   "left"  => {:side => 1, :wheel_vis => 1},
@@ -314,6 +320,9 @@ front_wheel_locations = {
         <dynamics>
           <friction><%= wheel_static_friction %></friction>
         </dynamics>
+        <limit>
+          <effort><%= wheel_torque_limit %></effort>
+        </limit>
       </axis>
     </joint>
 

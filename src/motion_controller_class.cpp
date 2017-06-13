@@ -57,8 +57,9 @@ void MotionControllerPlugin::OnUpdate(const common::UpdateInfo & /*_info*/) {
 
   center_link_joint_->SetVelocity(0,10);
 
-  front_wheels_joints_[0]->SetVelocity(0,2.0);
-  front_wheels_joints_[1]->SetVelocity(0,2.0);
+  front_wheels_joints_[0]->SetForce(0,500.0);
+  front_wheels_joints_[1]->SetForce(0,500.0);
+
 }
 
 physics::JointPtr MotionControllerPlugin::GetJoint(const std::string& element_name) {

@@ -11,7 +11,7 @@
 
  <!--push robot_description to factory and spawn robot in gazebo  -->
  <node name="spawn_robot" pkg="gazebo_ros" type="spawn_model"
-          args="-file $(find gazebo_f150)/models/F150/model.sdf
+          args="-file $(find ackermann_model)/models/f150_ackermann/model.sdf
                 -sdf
                 -model F-150
                 -x $(arg x)
